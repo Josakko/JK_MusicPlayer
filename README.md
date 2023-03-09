@@ -2,7 +2,10 @@
 Music Player made in python using pygame
 
 ## Usage
-Download installer [here](https://mediafire)
+Download installer [here](https://app.mediafire.com/myfiles) 
+
+## State of the project
+This project is still in WIP!
 
 
 ## Contributors
