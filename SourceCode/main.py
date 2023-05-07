@@ -1,9 +1,11 @@
 from tkinter import filedialog
 from tkinter import *
 import os
+from mutagen.mp3 import MP3
 from tkinter import ttk
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
+import time
 
 
 class JKMusicPlayer:
@@ -57,7 +59,7 @@ class JKMusicPlayer:
         self.time_lbl = Label(self.time_frame, text="0:00 / 0:00", font=self.font)
         self.time_lbl.pack(side=RIGHT, padx=10)
         
-        self.time_scale = ttk.Scale(self.time_frame, state="disabled")
+        self.time_scale = ttk.Scale(self.time_frame, from_=0, state="disabled", value=0)
         self.time_scale.pack(side=LEFT, fill=X, expand=True, padx=15)
 
         self.control_frame = Frame(root, bg="#1e2529")
@@ -90,13 +92,14 @@ class JKMusicPlayer:
         self.vol_scale.grid(row=1, column=4, padx=15, sticky=E)
 
 
-        self.music = "audio.mp3"
     
     def space(self, event):
         self.toggle_pause_btn.invoke()
 
+
     def deselect(self, event):
         self.playlist.selection_clear(0, END)
+
 
     def open_folder(self):
         initialdir = os.path.join('C:\\', 'Users', os.getlogin(), 'Music')
@@ -114,8 +117,32 @@ class JKMusicPlayer:
         self.play_btn.configure(state="normal")
         self.path = self.dir
 
+
+    def length(self):
+        try:
+            time_stamp = pygame.mixer.music.get_pos() / 1000
+            self.time_scale.set(time_stamp)
+            time_ = time.strftime('%M:%S', time.gmtime(time_stamp))
+            try:
+                song = MP3(self.song)
+                duration_ = song.info.length
+                self.time_scale.configure(from_=0, to=duration_)
+                duration = time.strftime("%M:%S", time.gmtime(duration_))
+                
+                self.time_lbl.configure(text=f"{time_} / {duration}")
+            except:
+                self.time_lbl.configure(text=f"{time_} / 0:00")
+                pass
+        except:
+            pass
+        self.time_lbl.after(1000, self.length)
+
+
     def next(self):
         self.playing = self.playing + 1
+        if self.playlist.get(self.playing) == "": 
+            self.playing = self.playing - 1
+            return
         self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
@@ -127,8 +154,12 @@ class JKMusicPlayer:
         self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
         pygame.mixer.music.play(loops=0)
   
+  
     def prev(self):
         self.playing = self.playing - 1
+        if self.playlist.get(self.playing) == "": 
+            self.playing = self.playing + 1
+            return
         self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
@@ -140,18 +171,20 @@ class JKMusicPlayer:
         self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
         pygame.mixer.music.play(loops=0)
         
+        
     def play(self):
         if self.playlist.curselection():
             self.playing = self.playlist.curselection()[0]
             self.song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
             pygame.mixer.music.load(self.song)
             pygame.mixer.music.play(loops=0)
+            self.length()
             self.status_lbl.configure(text=f"Playing: {self.playlist.get(ACTIVE)}")
             self.toggle_pause_btn.configure(state="normal")
             self.next_btn.configure(state="normal")
             self.prev_btn.configure(state="normal")
             self.time_scale.configure(state="normal")
-
+            
 
     def toggle_pause(self):
         if self.toggle_pause_btn["text"] == "Pause":
