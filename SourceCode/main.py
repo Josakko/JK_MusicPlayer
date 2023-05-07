@@ -121,7 +121,7 @@ class JKMusicPlayer:
     def length(self):
         try:
             time_stamp = pygame.mixer.music.get_pos() / 1000
-            self.time_scale.set(time_stamp)
+            self.time_scale.configure(value=time_stamp)   #self.time_scale.set(time_stamp)
             time_ = time.strftime('%M:%S', time.gmtime(time_stamp))
             try:
                 song = MP3(self.song)
@@ -135,6 +135,7 @@ class JKMusicPlayer:
                 pass
         except:
             pass
+        #print(f"{time_}   {int(self.time_scale.get())}")
         self.time_lbl.after(1000, self.length)
 
 
