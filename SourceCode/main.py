@@ -34,7 +34,6 @@ class JKMusicPlayer:
         self.list_frame = Frame(self.root)
         self.list_frame.pack(fill=Y, expand=True)
 
-
         self.y_scrollbar = Scrollbar(self.list_frame)
         self.y_scrollbar.pack(side=RIGHT, fill=Y)
         
@@ -49,6 +48,18 @@ class JKMusicPlayer:
         self.y_scrollbar.config(command=self.playlist.yview)
         #self.x_scrollbar.config(command=self.playlist.xview)
 
+        self.load_btn = Button(self.root, text="Load Folder", command=self.open_folder, font=self.font, width=20)
+        self.load_btn.pack()
+
+        self.time_frame = Frame(self.root)
+        self.time_frame.pack(fill=X)
+        
+        self.time_lbl = Label(self.time_frame, text="0:00 / 0:00", font=self.font)
+        self.time_lbl.pack(side=RIGHT, padx=10)
+        
+        self.time_scale = ttk.Scale(self.time_frame, state="disabled")
+        self.time_scale.pack(side=LEFT, fill=X, expand=True, padx=15)
+
         self.control_frame = Frame(root, bg="#1e2529")
         self.control_frame.pack(side=BOTTOM, fill=X)
         self.control_frame.columnconfigure([0, 2, 4], weight=1)
@@ -59,14 +70,11 @@ class JKMusicPlayer:
         self.next_img = PhotoImage(file="assets/next.png")
         self.prev_img = PhotoImage(file="assets/previous.png")
 
-        self.load_btn = Button(self.root, text="Load Folder", command=self.open_folder, font=self.font, width=20)
-        self.load_btn.pack()
-
         self.status_lbl = Label(self.control_frame, text="", font=self.font, fg=self.bg, bg=self.fg)
         self.status_lbl.grid(row=0, column=0, padx=5, sticky=W)
 
-        self.play_btn = Button(self.control_frame, text="Play", command=self.play, font=("Helvetica", 14, "bold"), width=20, bg=self.bg, fg=self.fg, state="disabled")
-        self.play_btn.grid(row=1, column=0, padx=5, sticky=W)
+        self.play_btn = Button(self.control_frame, text="Play", command=self.play, font=("Helvetica", 14, "bold"), width=15, bg=self.bg, fg=self.fg, state="disabled")
+        self.play_btn.grid(row=1, column=0, padx=20, sticky=W)
 
         self.prev_btn = Button(self.control_frame, image=self.prev_img, state="disabled", bg=self.bg, command=self.prev)
         self.prev_btn.grid(row=1, column=1, sticky=E)
@@ -108,9 +116,9 @@ class JKMusicPlayer:
 
     def next(self):
         self.playing = self.playing + 1
-        song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
+        self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
         try:
-            pygame.mixer.music.load(song)
+            pygame.mixer.music.load(self.song)
         except:
             self.playing = self.playing - 1
             return
@@ -121,9 +129,9 @@ class JKMusicPlayer:
   
     def prev(self):
         self.playing = self.playing - 1
-        song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
+        self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
         try:
-            pygame.mixer.music.load(song)
+            pygame.mixer.music.load(self.song)
         except:
             self.playing = self.playing + 1
             return
@@ -135,13 +143,14 @@ class JKMusicPlayer:
     def play(self):
         if self.playlist.curselection():
             self.playing = self.playlist.curselection()[0]
-            song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
-            pygame.mixer.music.load(song)
+            self.song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
+            pygame.mixer.music.load(self.song)
             pygame.mixer.music.play(loops=0)
             self.status_lbl.configure(text=f"Playing: {self.playlist.get(ACTIVE)}")
             self.toggle_pause_btn.configure(state="normal")
             self.next_btn.configure(state="normal")
             self.prev_btn.configure(state="normal")
+            self.time_scale.configure(state="normal")
 
 
     def toggle_pause(self):
@@ -154,6 +163,7 @@ class JKMusicPlayer:
             self.play_btn.configure(state="disabled")
             self.next_btn.configure(state="disabled")
             self.prev_btn.configure(state="disabled")
+            self.time_scale.configure(state="disabled")
             text = self.status_lbl["text"].lstrip("Playing: ")
             self.status_lbl.configure(text=f"Paused: {text}")
         elif self.toggle_pause_btn["text"] == "Resume":
@@ -167,6 +177,7 @@ class JKMusicPlayer:
             self.play_btn.configure(state="normal")
             self.next_btn.configure(state="normal")
             self.prev_btn.configure(state="normal")
+            self.time_scale.configure(state="normal")
         
     
     def vol(self, x):
