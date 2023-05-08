@@ -1,4 +1,5 @@
 from tkinter import filedialog
+from tkinter import messagebox
 from tkinter import *
 import os
 from mutagen.mp3 import MP3
@@ -203,7 +204,11 @@ class JKMusicPlayer:
         if self.playlist.curselection():
             self.playing = self.playlist.curselection()[0]
             self.song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
-            pygame.mixer.music.load(self.song)
+            try:
+                pygame.mixer.music.load(self.song)
+            except:
+                messagebox.showerror("File Error", "File is invalid please make sure that file exists!")
+                return
             self.time_scale.set(0)
             pygame.mixer.music.play(loops=0)
             self.length()
