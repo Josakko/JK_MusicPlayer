@@ -92,8 +92,12 @@ class JKMusicPlayer:
         self.vol_scale = ttk.Scale(self.control_frame, command=self.vol, from_=0, to=1, value=1, length=200)
         self.vol_scale.grid(row=1, column=4, padx=15, sticky=E)
 
+
+        self.time_scale.bind("<ButtonRelease>", self.play_len)
+
         #self.time_stamp = 0
         self.scale_time_stamp = 0
+        
         
         
     def space(self, event):
@@ -111,6 +115,9 @@ class JKMusicPlayer:
             self.dir = self.path
             return
         pygame.mixer.music.stop()
+        pygame.mixer.music.unload()
+        self.time_scale.configure(value=0)
+        self.time_lbl.configure(text="0:00 / 0:00")
         self.playlist.delete(0, END)
         self.status_lbl.configure(text="")
         for file in os.listdir(self.dir):
@@ -150,12 +157,21 @@ class JKMusicPlayer:
         self.time_lbl.after(1000, self.length)
 
 
-    def len_scale(self, value):
-        pygame.mixer.music.stop()
+    def play_len(self, event):
         try:
             pygame.mixer.music.load(self.song)
             pygame.mixer.music.play(loops=0, start=int(self.time_scale.get()))
-            self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp))} / {self.duration}")
+        except:
+            return
+    
+    
+    def len_scale(self, value):
+        pygame.mixer.music.stop()
+        try:
+            #pygame.mixer.music.load(self.song)
+            #pygame.mixer.music.play(loops=0, start=int(self.time_scale.get()))
+            #print(int(pygame.mixer.music.get_pos() / 1000))
+            self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(self.scale_time_stamp))} / {self.duration}") #self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp))} / {self.duration}")
         except Exception as e:
             #print(e)
             return
