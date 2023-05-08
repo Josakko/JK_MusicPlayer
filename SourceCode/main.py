@@ -3,9 +3,9 @@ from tkinter import *
 import os
 from mutagen.mp3 import MP3
 from tkinter import ttk
+import time
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
-import time
 
 
 class JKMusicPlayer:
@@ -59,7 +59,7 @@ class JKMusicPlayer:
         self.time_lbl = Label(self.time_frame, text="0:00 / 0:00", font=self.font)
         self.time_lbl.pack(side=RIGHT, padx=10)
         
-        self.time_scale = ttk.Scale(self.time_frame, from_=0, state="disabled", value=0)
+        self.time_scale = ttk.Scale(self.time_frame, from_=0, state="disabled", value=0, command=self.len_scale)
         self.time_scale.pack(side=LEFT, fill=X, expand=True, padx=15)
 
         self.control_frame = Frame(root, bg="#1e2529")
@@ -91,8 +91,10 @@ class JKMusicPlayer:
         self.vol_scale = ttk.Scale(self.control_frame, command=self.vol, from_=0, to=1, value=1, length=200)
         self.vol_scale.grid(row=1, column=4, padx=15, sticky=E)
 
-
-    
+        #self.time_stamp = 0
+        self.scale_time_stamp = 0
+        
+        
     def space(self, event):
         self.toggle_pause_btn.invoke()
 
@@ -116,27 +118,49 @@ class JKMusicPlayer:
                 self.playlist.insert(END, song)
         self.play_btn.configure(state="normal")
         self.path = self.dir
-
-
+        
     def length(self):
         try:
-            time_stamp = pygame.mixer.music.get_pos() / 1000
-            self.time_scale.configure(value=time_stamp)   #self.time_scale.set(time_stamp)
-            time_ = time.strftime('%M:%S', time.gmtime(time_stamp))
+            #print(self.time_stamp)
+            self.time_stamp = pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp
+            #print(self.time_stamp)
+            self.time_scale.configure(value=self.time_stamp)
+            time_ = time.strftime('%M:%S', time.gmtime(self.time_stamp))
             try:
                 song = MP3(self.song)
                 duration_ = song.info.length
                 self.time_scale.configure(from_=0, to=duration_)
-                duration = time.strftime("%M:%S", time.gmtime(duration_))
+                self.duration = time.strftime("%M:%S", time.gmtime(duration_))
                 
-                self.time_lbl.configure(text=f"{time_} / {duration}")
-            except:
+                self.time_lbl.configure(text=f"{time_} / {self.duration}")
+            except Exception as e:
+                #print(e)
                 self.time_lbl.configure(text=f"{time_} / 0:00")
                 pass
-        except:
+
+            #print(round(duration_),  round(time_stamp))
+            #if round(duration_) == round(time_stamp):
+            #    self.time_lbl.configure(text=f"{duration} / {duration}")
+            #    self.time_scale.set(duration)
+        except Exception as e:
+            #print(e)
             pass
-        #print(f"{time_}   {int(self.time_scale.get())}")
+        #print(f"{time_}   {self.time_scale.get()}")
         self.time_lbl.after(1000, self.length)
+
+
+    def len_scale(self, value):
+        pygame.mixer.music.stop()
+        try:
+            pygame.mixer.music.load(self.song)
+            pygame.mixer.music.play(loops=0, start=int(self.time_scale.get()))
+            self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp))} / {self.duration}")
+        except Exception as e:
+            #print(e)
+            return
+        self.scale_time_stamp = int(self.time_scale.get())
+        #print(self.scale_time_stamp)
+
 
 
     def next(self):
@@ -153,6 +177,7 @@ class JKMusicPlayer:
         self.deselect("x")
         self.playlist.selection_set(self.playing)
         self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
+        self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
   
   
@@ -170,6 +195,7 @@ class JKMusicPlayer:
         self.deselect("x")
         self.playlist.selection_set(self.playing)
         self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
+        self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
         
         
@@ -178,6 +204,7 @@ class JKMusicPlayer:
             self.playing = self.playlist.curselection()[0]
             self.song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
             pygame.mixer.music.load(self.song)
+            self.time_scale.set(0)
             pygame.mixer.music.play(loops=0)
             self.length()
             self.status_lbl.configure(text=f"Playing: {self.playlist.get(ACTIVE)}")
