@@ -7,6 +7,7 @@ from tkinter import ttk
 import time
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
+import json
 
 
 class JKMusicPlayer:
@@ -97,7 +98,7 @@ class JKMusicPlayer:
 
         #self.time_stamp = 0
         self.scale_time_stamp = 0
-        
+        self.loop = False
         
         
     def space(self, event):
@@ -117,7 +118,7 @@ class JKMusicPlayer:
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
         self.time_scale.configure(value=0)
-        self.time_lbl.configure(text="0:00 / 0:00")
+        self.time_lbl.configure(text="00:00 / 00:00")
         self.playlist.delete(0, END)
         self.status_lbl.configure(text="")
         for file in os.listdir(self.dir):
@@ -141,16 +142,33 @@ class JKMusicPlayer:
                 self.duration = time.strftime("%M:%S", time.gmtime(duration_))
                 
                 self.time_lbl.configure(text=f"{time_} / {self.duration}")
-            except Exception as e:
+            #except Exception as e:
+            except:
                 #print(e)
                 self.time_lbl.configure(text=f"{time_} / 0:00")
                 pass
 
-            #print(round(duration_),  round(time_stamp))
-            #if round(duration_) == round(time_stamp):
-            #    self.time_lbl.configure(text=f"{duration} / {duration}")
-            #    self.time_scale.set(duration)
-        except Exception as e:
+            #print(int(duration_), int(self.time_stamp))
+            
+            if int(duration_) == int(self.time_stamp) or int(duration_) == int(self.time_stamp + 1):
+                #print("end of song")
+                self.time_lbl.configure(text=f"{self.duration} / {self.duration}")
+                if self.loop:
+                    try:
+                        pygame.mixer.music.unload()
+                        #pygame.mixer.music.load(self.song)
+                        pygame.mixer.music.play(loops=0)
+                    except:
+                        return
+                else:
+                    #print("going to next")
+                    #self.time_scale.set(duration_)#  self.time_scale.configure(value=duration_)
+                    self.next()
+                    
+                #print("end")
+                #print("end")
+        #except Exception as e:
+        except:
             #print(e)
             pass
         #print(f"{time_}   {self.time_scale.get()}")
@@ -164,6 +182,17 @@ class JKMusicPlayer:
         except:
             return
     
+
+    def load_settings(self):
+        with open("config.json", "r") as f:
+            data = json.load(f)
+        return data
+
+
+    def save_settings(self, data):
+        with open("config.json", "w") as f:
+            json.dump(data, f, indent=4)
+
     
     def len_scale(self, value):
         pygame.mixer.music.stop()
@@ -268,9 +297,19 @@ class JKMusicPlayer:
             pygame.mixer.music.set_volume(value)
         except:
             return
-
+        #self.save_settings(x)
+        
 
 
 root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
+
+
+#TODO
+##  1. loop
+##  2. auto play -- done
+##  3. save settings
+#?  4. use treeview instead of listbox
+#!  5. remodel ui
+#TODO
