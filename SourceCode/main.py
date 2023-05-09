@@ -133,9 +133,9 @@ class JKMusicPlayer:
 
     def open_folder(self):
         initialdir = os.path.join('C:\\', 'Users', os.getlogin(), 'Music')
-        self.dir = filedialog.askdirectory(initialdir=initialdir)
-        if not self.dir:
-            self.dir = self.path
+        dir = filedialog.askdirectory(initialdir=initialdir)
+        if not dir:
+            dir = self.path
             return
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
@@ -143,12 +143,12 @@ class JKMusicPlayer:
         self.time_lbl.configure(text="00:00 / 00:00")
         self.playlist.delete(0, END)
         self.status_lbl.configure(text="")
-        for file in os.listdir(self.dir):
+        for file in os.listdir(dir):
             if file.endswith(".mp3"): # or file.endswith(".wav")
                 song = os.path.splitext(file)[0]
                 self.playlist.insert(END, song)
         self.play_btn.configure(state="normal")
-        self.path = self.dir
+        self.path = dir
         
     def length(self):
         try:
@@ -242,7 +242,7 @@ class JKMusicPlayer:
         if self.playlist.get(self.playing) == "": 
             self.playing = self.playing - 1
             return
-        self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
+        self.song = f"{self.path}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
         except:
@@ -260,7 +260,7 @@ class JKMusicPlayer:
         if self.playlist.get(self.playing) == "": 
             self.playing = self.playing + 1
             return
-        self.song = f"{self.dir}\{self.playlist.get(self.playing)}.mp3"
+        self.song = f"{self.path}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
         except:
@@ -276,7 +276,7 @@ class JKMusicPlayer:
     def play(self):
         if self.playlist.curselection():
             self.playing = self.playlist.curselection()[0]
-            self.song = f"{self.dir}\{self.playlist.get(ACTIVE)}.mp3"
+            self.song = f"{self.path}\{self.playlist.get(ACTIVE)}.mp3"
             try:
                 pygame.mixer.music.load(self.song)
             except:
@@ -340,11 +340,3 @@ root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
 
-
-#TODO
-##  1. loop
-##  2. auto play -- done
-##  3. save settings -- done
-#?  4. use treeview instead of listbox
-#!  5. remodel ui
-#TODO
