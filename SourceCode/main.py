@@ -28,6 +28,7 @@ class JKMusicPlayer:
         self.root.iconbitmap("assets/JK.ico")
         self.root.title("JK MusicPlayer")
         self.root.config(bg="#dbdbdb")
+        self.root.protocol("WM_DELETE_WINDOW", self.quit)
         #self.root.resizable(False, False)
         self.font = ("Helvetica", 14)
         self.bg = "#bde6fb" #bg=self.bg
@@ -99,6 +100,10 @@ class JKMusicPlayer:
         #self.time_stamp = 0
         self.scale_time_stamp = 0
         self.loop = False
+        #self.path = ""
+    
+        self.settings()
+        
         
         
     def space(self, event):
@@ -107,6 +112,23 @@ class JKMusicPlayer:
 
     def deselect(self, event):
         self.playlist.selection_clear(0, END)
+
+    
+    def settings(self):
+        settings = self.load_settings()
+        folder = settings["folder"]
+        self.vol_scale.set(settings["volume"])
+        
+        if folder:
+            try:
+                for file in os.listdir(folder):
+                    if file.endswith(".mp3"): # or file.endswith(".wav")
+                        song = os.path.splitext(file)[0]
+                        self.playlist.insert(END, song)
+            except:
+                return
+            self.play_btn.configure(state="normal")
+            self.path = folder
 
 
     def open_folder(self):
@@ -297,19 +319,17 @@ class JKMusicPlayer:
             pygame.mixer.music.set_volume(value)
         except:
             return
-        #self.save_settings(x)
         
-
-
+        
+    def quit(self):
+        try:
+            self.save_settings({"folder": self.path, "volume": self.vol_scale.get()})
+        except:
+            self.save_settings({"folder": "", "volume": self.vol_scale.get()})
+        finally:
+            self.root.destroy()
+        
+            
 root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
-
-
-#TODO
-##  1. loop
-##  2. auto play -- done
-##  3. save settings
-#?  4. use treeview instead of listbox
-#!  5. remodel ui
-#TODO
