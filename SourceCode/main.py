@@ -14,8 +14,8 @@ class JKMusicPlayer:
     def __init__(self, root):
         self.root = root
 
-        window_width = 1000
-        window_hight = 600
+        window_width = 1100
+        window_hight = 700
 
         monitor_width = self.root.winfo_screenwidth()
         monitor_hight = self.root.winfo_screenheight()
@@ -24,7 +24,7 @@ class JKMusicPlayer:
         y = (monitor_hight / 2) - (window_hight / 2)
 
         self.root.geometry(f'{window_width}x{window_hight}+{int(x)}+{int(y)}')
-        self.root.minsize(800, 600)
+        self.root.minsize(900, 600)
         self.root.iconbitmap("assets/JK.ico")
         self.root.title("JK MusicPlayer")
         self.root.config(bg="#dbdbdb")
@@ -36,25 +36,34 @@ class JKMusicPlayer:
         self.playing = False
         pygame.mixer.init()
 
+        self.menubar = Menu(self.root)
+        
+        self.filemenu = Menu(self.menubar, tearoff=False)
+        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="Load Folder", command=self.open_folder)        
+        
+        self.root.config(menu=self.menubar)
+
+
         self.list_frame = Frame(self.root)
-        self.list_frame.pack(fill=Y, expand=True)
+        self.list_frame.pack(fill=BOTH, expand=True, padx=20)
 
         self.y_scrollbar = Scrollbar(self.list_frame)
         self.y_scrollbar.pack(side=RIGHT, fill=Y)
         
         #self.x_scrollbar = Scrollbar(self.list_frame, orient=HORIZONTAL)
         #self.x_scrollbar.pack(side=BOTTOM, fill=X)
-        
+
         self.playlist = Listbox(self.list_frame, yscrollcommand=self.y_scrollbar.set, width=140, height=15, font=self.font, ) # xscrollcommand=self.x_scrollbar.set
-        self.playlist.pack(fill=Y, expand=True)
+        self.playlist.pack(fill=BOTH, expand=True)
 
         self.playlist.bind("<Button-1>", self.deselect)
 
         self.y_scrollbar.config(command=self.playlist.yview)
         #self.x_scrollbar.config(command=self.playlist.xview)
 
-        self.load_btn = Button(self.root, text="Load Folder", command=self.open_folder, font=self.font, width=20)
-        self.load_btn.pack()
+        #self.load_btn = Button(self.root, text="Load Folder", command=self.open_folder, font=self.font, width=20)
+        #self.load_btn.pack()
 
         self.time_frame = Frame(self.root)
         self.time_frame.pack(fill=X)
