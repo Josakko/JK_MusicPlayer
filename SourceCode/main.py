@@ -333,3 +333,12 @@ class JKMusicPlayer:
 root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
+
+
+#TODO
+##  1. loop
+##  2. auto play -- done
+##  3. save settings -- done
+#?  4. use treeview instead of listbox
+#!  5. remodel ui
+#TODO
