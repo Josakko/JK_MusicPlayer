@@ -206,10 +206,16 @@ class JKMusicPlayer:
     
 
     def load_settings(self):
-        with open("config.json", "r") as f:
-            data = json.load(f)
-        return data
-
+        try:
+            with open("config.json", "r") as f:
+                data = json.load(f)
+            return data
+        except:
+            return {
+                "folder": "", 
+                "volume": 1
+            }
+            
 
     def save_settings(self, data):
         with open("config.json", "w") as f:
