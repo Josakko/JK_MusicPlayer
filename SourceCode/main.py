@@ -181,23 +181,22 @@ class JKMusicPlayer:
 
             #print(int(duration_), int(self.time_stamp))
             
-            if int(duration_) == int(self.time_stamp) or int(duration_) == int(self.time_stamp + 1):
+            if int(duration_) == int(self.time_stamp) or int(duration_) == int(self.time_stamp + 1): #if int(duration_) == int(self.time_stamp):
                 #print("end of song")
                 self.time_lbl.configure(text=f"{self.duration} / {self.duration}")
                 if self.loop:
                     try:
                         pygame.mixer.music.unload()
                         #pygame.mixer.music.load(self.song)
-                        pygame.mixer.music.play(loops=0)
+                        #pygame.mixer.music.play(loops=0)
+                        #self.time_scale.set(0)
                     except:
                         return
                 else:
-                    #print("going to next")
                     #self.time_scale.set(duration_)#  self.time_scale.configure(value=duration_)
+                    self.time_lbl.after(800)
                     self.next()
                     
-                #print("end")
-                #print("end")
         #except Exception as e:
         except:
             #print(e)
@@ -238,7 +237,7 @@ class JKMusicPlayer:
             #pygame.mixer.music.play(loops=0, start=int(self.time_scale.get()))
             #print(int(pygame.mixer.music.get_pos() / 1000))
             self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(self.scale_time_stamp))} / {self.duration}") #self.time_lbl.configure(text=f"{time.strftime('%M:%S', time.gmtime(pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp))} / {self.duration}")
-        except Exception as e:
+        except:
             #print(e)
             return
         self.scale_time_stamp = int(self.time_scale.get())
