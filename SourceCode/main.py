@@ -94,6 +94,10 @@ class JKMusicPlayer:
         #self.loop_btn = Button(self.control_frame, text="Loop", command=self.loop)
         #self.loop_btn.grid(row=1, column=0)
 
+        #self.control_btns_frame = Frame(self.control_frame, bg="#1e2522")
+        #self.control_btns_frame.pack()
+        
+
         self.prev_btn = Button(self.control_frame, image=self.prev_img, state="disabled", bg=self.bg, command=self.prev)
         self.prev_btn.grid(row=1, column=1, sticky=E)
 
