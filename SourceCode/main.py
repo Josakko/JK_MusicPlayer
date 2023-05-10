@@ -73,6 +73,7 @@ class JKMusicPlayer:
         
         self.time_scale = ttk.Scale(self.time_frame, from_=0, state="disabled", value=0, command=self.len_scale)
         self.time_scale.pack(side=LEFT, fill=X, expand=True, padx=15)
+        self.time_scale.bind("<ButtonRelease>", self.play_len)
 
         self.control_frame = Frame(root, bg="#1e2529")
         self.control_frame.pack(side=BOTTOM, fill=X)
@@ -90,6 +91,9 @@ class JKMusicPlayer:
         self.play_btn = Button(self.control_frame, text="Play", command=self.play, font=("Helvetica", 14, "bold"), width=15, bg=self.bg, fg=self.fg, state="disabled")
         self.play_btn.grid(row=1, column=0, padx=20, sticky=W)
 
+        #self.loop_btn = Button(self.control_frame, text="Loop", command=self.loop)
+        #self.loop_btn.grid(row=1, column=0)
+
         self.prev_btn = Button(self.control_frame, image=self.prev_img, state="disabled", bg=self.bg, command=self.prev)
         self.prev_btn.grid(row=1, column=1, sticky=E)
 
@@ -103,9 +107,7 @@ class JKMusicPlayer:
         self.vol_scale = ttk.Scale(self.control_frame, command=self.vol, from_=0, to=1, value=1, length=200)
         self.vol_scale.grid(row=1, column=4, padx=15, sticky=E)
 
-
-        self.time_scale.bind("<ButtonRelease>", self.play_len)
-
+        
         #self.time_stamp = 0
         self.scale_time_stamp = 0
         self.loop = False
@@ -122,7 +124,7 @@ class JKMusicPlayer:
     def deselect(self, event):
         self.playlist.selection_clear(0, END)
 
-    
+     
     def settings(self):
         settings = self.load_settings()
         folder = settings["folder"]
@@ -185,13 +187,14 @@ class JKMusicPlayer:
                 #print("end of song")
                 self.time_lbl.configure(text=f"{self.duration} / {self.duration}")
                 if self.loop:
-                    try:
-                        pygame.mixer.music.unload()
-                        #pygame.mixer.music.load(self.song)
-                        #pygame.mixer.music.play(loops=0)
-                        #self.time_scale.set(0)
-                    except:
-                        return
+                    pass
+                    #try:
+                    #    #pygame.mixer.music.unload()
+                    #    #pygame.mixer.music.load(self.song)
+                    #    pygame.mixer.music.play(loops=0)
+                    #    #self.time_scale.set(0)
+                    #except:
+                    #    return
                 else:
                     #self.time_scale.set(duration_)#  self.time_scale.configure(value=duration_)
                     self.time_lbl.after(800)
@@ -347,4 +350,3 @@ class JKMusicPlayer:
 root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
-
