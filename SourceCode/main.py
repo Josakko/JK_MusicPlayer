@@ -199,6 +199,13 @@ class JKMusicPlayer:
                     #    #self.time_scale.set(0)
                     #except:
                     #    return
+                    
+                    #self.song = f"{self.path}\{self.playlist.get(self.playing)}.mp3"
+                    #try:
+                    #    pygame.mixer.music.load(self.song)
+                    #except:
+                    #    pass
+                    #pygame.mixer.music.play(loops=0)
                 else:
                     #self.time_scale.set(duration_)#  self.time_scale.configure(value=duration_)
                     self.time_lbl.after(800)
