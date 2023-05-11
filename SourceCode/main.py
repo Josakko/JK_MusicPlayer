@@ -85,8 +85,8 @@ class JKMusicPlayer:
         self.next_img = PhotoImage(file="assets/next.png")
         self.prev_img = PhotoImage(file="assets/previous.png")
 
-        self.status_lbl = Label(self.control_frame, text="", font=self.font, fg=self.bg, bg=self.fg)
-        self.status_lbl.grid(row=0, column=0, padx=5, sticky=W)
+        self.status_lbl = Label(self.control_frame, text="", font=self.font, fg=self.bg, bg=self.fg,    wraplength=1000)
+        self.status_lbl.grid(row=0, column=0, padx=5, sticky=W, pady=5)
 
         self.play_btn = Button(self.control_frame, text="Play", command=self.play, font=("Helvetica", 14, "bold"), width=15, bg=self.bg, fg=self.fg, state="disabled")
         self.play_btn.grid(row=1, column=0, padx=20, sticky=W)
@@ -97,7 +97,6 @@ class JKMusicPlayer:
         #self.control_btns_frame = Frame(self.control_frame, bg="#1e2522")
         #self.control_btns_frame.pack()
         
-
         self.prev_btn = Button(self.control_frame, image=self.prev_img, state="disabled", bg=self.bg, command=self.prev)
         self.prev_btn.grid(row=1, column=1, sticky=E)
 
@@ -118,7 +117,6 @@ class JKMusicPlayer:
         #self.path = ""
     
         self.settings()
-        
         
         
     def space(self, event):
@@ -164,6 +162,7 @@ class JKMusicPlayer:
                 self.playlist.insert(END, song)
         self.play_btn.configure(state="normal")
         self.path = dir
+        
         
     def length(self):
         try:
@@ -258,7 +257,6 @@ class JKMusicPlayer:
         #print(self.scale_time_stamp)
 
 
-
     def next(self):
         self.playing = self.playing + 1
         if self.playlist.get(self.playing) == "": 
@@ -272,7 +270,7 @@ class JKMusicPlayer:
             return
         self.deselect("x")
         self.playlist.selection_set(self.playing)
-        self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
+        self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(self.playing)}"))
         self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
   
@@ -290,7 +288,7 @@ class JKMusicPlayer:
             return
         self.deselect("x")
         self.playlist.selection_set(self.playing)
-        self.status_lbl.configure(text=f"Playing: {self.playlist.get(self.playing)}")
+        self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(self.playing)}"))
         self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
         
@@ -307,7 +305,7 @@ class JKMusicPlayer:
             self.time_scale.set(0)
             pygame.mixer.music.play(loops=0)
             self.length()
-            self.status_lbl.configure(text=f"Playing: {self.playlist.get(ACTIVE)}")
+            self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(ACTIVE)}"))
             self.toggle_pause_btn.configure(state="normal")
             self.next_btn.configure(state="normal")
             self.prev_btn.configure(state="normal")
@@ -348,6 +346,12 @@ class JKMusicPlayer:
         except:
             return
         
+    def shorten(self, text):
+        if len(text) > 50:
+            shorten_text = text[:47] + "..."
+            return shorten_text
+        else:
+            return text
         
     def quit(self):
         try:
