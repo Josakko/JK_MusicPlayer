@@ -270,7 +270,7 @@ class JKMusicPlayer:
             return
         self.deselect("x")
         self.playlist.selection_set(self.playing)
-        self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(self.playing)}"))
+        self.status_lbl.configure(text=f"Playing: {self.shorten(self.playlist.get(self.playing))}")
         self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
   
@@ -288,7 +288,7 @@ class JKMusicPlayer:
             return
         self.deselect("x")
         self.playlist.selection_set(self.playing)
-        self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(self.playing)}"))
+        self.status_lbl.configure(text=f"Playing: {self.shorten(self.playlist.get(self.playing))}")
         self.time_scale.set(0)
         pygame.mixer.music.play(loops=0)
         
@@ -305,7 +305,7 @@ class JKMusicPlayer:
             self.time_scale.set(0)
             pygame.mixer.music.play(loops=0)
             self.length()
-            self.status_lbl.configure(text=self.shorten(f"Playing: {self.playlist.get(ACTIVE)}"))
+            self.status_lbl.configure(text=f"Playing: {self.shorten(self.playlist.get(ACTIVE))}")
             self.toggle_pause_btn.configure(state="normal")
             self.next_btn.configure(state="normal")
             self.prev_btn.configure(state="normal")
@@ -347,8 +347,8 @@ class JKMusicPlayer:
             return
         
     def shorten(self, text):
-        if len(text) > 50:
-            shorten_text = text[:47] + "..."
+        if len(text) > 30:
+            shorten_text = f"{text[:27]}..."
             return shorten_text
         else:
             return text
