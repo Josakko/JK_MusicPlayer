@@ -85,7 +85,7 @@ class JKMusicPlayer:
         self.next_img = PhotoImage(file="assets/next.png")
         self.prev_img = PhotoImage(file="assets/previous.png")
 
-        self.status_lbl = Label(self.control_frame, text="", font=self.font, fg=self.bg, bg=self.fg,    wraplength=1000)
+        self.status_lbl = Label(self.control_frame, text="", font=self.font, fg=self.bg, bg=self.fg) #   7.6 width 
         self.status_lbl.grid(row=0, column=0, padx=5, sticky=W, pady=5)
 
         self.play_btn = Button(self.control_frame, text="Play", command=self.play, font=("Helvetica", 14, "bold"), width=15, bg=self.bg, fg=self.fg, state="disabled")
@@ -233,7 +233,7 @@ class JKMusicPlayer:
             return data
         except:
             return {
-                "folder": "", 
+                "folder": "",
                 "volume": 1
             }
             
@@ -347,8 +347,8 @@ class JKMusicPlayer:
             return
         
     def shorten(self, text):
-        if len(text) > 30:
-            shorten_text = f"{text[:27]}..."
+        if len(text) > 16: #MAX: 24
+            shorten_text = f"{text[:13]}..."
             return shorten_text
         else:
             return text
@@ -365,3 +365,4 @@ class JKMusicPlayer:
 root = Tk()
 JKMusicPlayer(root)
 root.mainloop()
+
