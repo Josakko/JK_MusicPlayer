@@ -2,10 +2,7 @@
 Music Player made in python using pygame
 
 ## Usage
-Download installer [here](https://app.mediafire.com/myfiles). (not made yet, or its dev version witch is unstable)
-
-## State of the project
-This project is still WIP
+Download installer [here](https://github.com/Josakko/JK_MusicPlayer/releases).
 
 ## Need Help?
 If you need help contact me on my [discord server](https://discord.gg/xgET5epJE6).
