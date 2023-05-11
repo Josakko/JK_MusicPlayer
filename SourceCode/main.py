@@ -347,7 +347,7 @@ class JKMusicPlayer:
             return
         
     def shorten(self, text):
-        if len(text) > 16: #MAX: 24
+        if len(text) > 16:
             shorten_text = f"{text[:13]}..."
             return shorten_text
         else:
