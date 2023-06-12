@@ -13,6 +13,7 @@ import json
 class JKMusicPlayer:
     def __init__(self, root):
         self.root = root
+        self.playlist_list = []
 
         window_width = 1100
         window_hight = 700
@@ -23,7 +24,7 @@ class JKMusicPlayer:
         x = (monitor_width / 2) - (window_width / 2)
         y = (monitor_hight / 2) - (window_hight / 2)
 
-        self.root.geometry(f'{window_width}x{window_hight}+{int(x)}+{int(y)}')
+        self.root.geometry(f"{window_width}x{window_hight}+{int(x)}+{int(y)}")
         self.root.minsize(900, 600)
         self.root.iconbitmap("assets/JK.ico")
         self.root.title("JK MusicPlayer")
@@ -102,7 +103,7 @@ class JKMusicPlayer:
 
         self.toggle_pause_btn = Button(self.control_frame, text="Pause", image=self.pause_img, command=self.toggle_pause, font=self.font, state="disabled", bg=self.bg, fg=self.fg)
         self.toggle_pause_btn.grid(row=1, column=2, pady=30, ipadx=10)
-        self.root.bind('<space>', self.space)
+        self.root.bind("<space>", self.space)
 
         self.next_btn = Button(self.control_frame, image=self.next_img, state="disabled", bg=self.bg, fg=self.fg, command=self.next)
         self.next_btn.grid(row=1, column=3, sticky=W)
@@ -133,19 +134,22 @@ class JKMusicPlayer:
         self.vol_scale.set(settings["volume"])
         
         if folder:
-            try:
-                for file in os.listdir(folder):
-                    if file.endswith(".mp3"): # or file.endswith(".wav")
-                        song = os.path.splitext(file)[0]
-                        self.playlist.insert(END, song)
-            except:
-                return
-            self.play_btn.configure(state="normal")
-            self.path = folder
+            if os.path.exists(folder):
+                try:
+                    for file in os.listdir(folder):
+                        if file.endswith(".mp3") or file.endswith(".wav"):
+                            song = os.path.splitext(file)
+                            self.playlist_list.append((song[0], song[1], f"{folder}/{file}"))
+                            self.playlist.insert(END, song[0])
+                except:
+                    return
+                self.play_btn.configure(state="normal")
+                self.path = folder
+
 
 
     def open_folder(self):
-        initialdir = os.path.join('C:\\', 'Users', os.getlogin(), 'Music')
+        initialdir = os.path.join(os.path.expanduser("~"), "Music")
         dir = filedialog.askdirectory(initialdir=initialdir)
         if not dir:
             dir = self.path
@@ -170,7 +174,7 @@ class JKMusicPlayer:
             self.time_stamp = pygame.mixer.music.get_pos() / 1000 + self.scale_time_stamp
             #print(self.time_stamp)
             self.time_scale.configure(value=self.time_stamp)
-            time_ = time.strftime('%M:%S', time.gmtime(self.time_stamp))
+            time_ = time.strftime("%M:%S", time.gmtime(self.time_stamp))
             try:
                 song = MP3(self.song)
                 duration_ = song.info.length
@@ -262,7 +266,7 @@ class JKMusicPlayer:
         if self.playlist.get(self.playing) == "": 
             self.playing = self.playing - 1
             return
-        self.song = f"{self.path}\{self.playlist.get(self.playing)}.mp3"
+        self.song = self.playlist_list[self.playing][2] #f"{self.path}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
         except:
@@ -280,7 +284,7 @@ class JKMusicPlayer:
         if self.playlist.get(self.playing) == "": 
             self.playing = self.playing + 1
             return
-        self.song = f"{self.path}\{self.playlist.get(self.playing)}.mp3"
+        self.song = self.playlist_list[self.playing][2] #f"{self.path}\{self.playlist.get(self.playing)}.mp3"
         try:
             pygame.mixer.music.load(self.song)
         except:
@@ -294,14 +298,18 @@ class JKMusicPlayer:
         
         
     def play(self):
-        if self.playlist.curselection():
+        if 1:
             self.playing = self.playlist.curselection()[0]
-            self.song = f"{self.path}\{self.playlist.get(ACTIVE)}.mp3"
-            try:
-                pygame.mixer.music.load(self.song)
-            except:
-                messagebox.showerror("File Error", "File is invalid please make sure that file exists!")
-                return
+            self.song = self.playlist_list[self.playing][2] #f"{self.path}\{self.playlist.get(ACTIVE)}.mp3"
+            
+            if os.path.exists(self.song):
+                try:
+                    pygame.mixer.music.load(self.song)
+                except:
+                    messagebox.showerror("Error", "File seams to be corrupted!")
+                    return
+            else: messagebox.showerror("File Error", "File is invalid please make sure that file exists!")
+
             self.time_scale.set(0)
             pygame.mixer.music.play(loops=0)
             self.length()
@@ -339,15 +347,14 @@ class JKMusicPlayer:
             self.time_scale.configure(state="normal")
         
     
-    def vol(self, x):
+    def vol(self, value):
         try:
-            value = float(x)
-            pygame.mixer.music.set_volume(value)
+            pygame.mixer.music.set_volume(float(value))
         except:
             return
         
     def shorten(self, text):
-        if len(text) > 16:
+        if len(text) > 16: #MAX: 24
             shorten_text = f"{text[:13]}..."
             return shorten_text
         else:
