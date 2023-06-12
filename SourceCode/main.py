@@ -151,19 +151,25 @@ class JKMusicPlayer:
     def open_folder(self):
         initialdir = os.path.join(os.path.expanduser("~"), "Music")
         dir = filedialog.askdirectory(initialdir=initialdir)
-        if not dir:
+        if not dir or not os.path.exists(dir):
             dir = self.path
             return
+        
         pygame.mixer.music.stop()
         pygame.mixer.music.unload()
+
         self.time_scale.configure(value=0)
         self.time_lbl.configure(text="00:00 / 00:00")
         self.playlist.delete(0, END)
         self.status_lbl.configure(text="")
+        self.playlist_list.clear()
+
         for file in os.listdir(dir):
-            if file.endswith(".mp3"): # or file.endswith(".wav")
+            if file.endswith(".mp3") or file.endswith(".wav"):
                 song = os.path.splitext(file)[0]
+                self.playlist_list.append((song[0], song[1], f"{dir}/{file}"))
                 self.playlist.insert(END, song)
+                
         self.play_btn.configure(state="normal")
         self.path = dir
         
@@ -301,7 +307,7 @@ class JKMusicPlayer:
         if 1:
             self.playing = self.playlist.curselection()[0]
             self.song = self.playlist_list[self.playing][2] #f"{self.path}\{self.playlist.get(ACTIVE)}.mp3"
-            
+
             if os.path.exists(self.song):
                 try:
                     pygame.mixer.music.load(self.song)
